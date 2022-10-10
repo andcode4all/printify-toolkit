@@ -1,0 +1,5 @@
+{
+    "web_api_url": "https://printify.com/api/v1/",
+    "price_change_path" : "products/change-price",
+    "republish_path": "products/publish"
+}
