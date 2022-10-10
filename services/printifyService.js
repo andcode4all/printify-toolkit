@@ -5,7 +5,6 @@ const bulkRepublishProductsURL = `https://printify.com/api/v1/users/${values.use
 const bearerToken = process.argv[2] === 'Bearer' ? `${process.argv[2]} ${process.argv[3]}` : `Bearer ${process.argv[2]}`
 const superagent = require('superagent');
 const config = require('../config')
-// const { web_api_url, price_change_path, republish_path } = require('../constants.json')
 
     const getProductIDs = async (pageSize = 12, pageLimit) => {
         let products = []
@@ -99,7 +98,7 @@ const config = require('../config')
     const changePrice = async (productIds, target, value) => {
         console.log(`changing target ${target} of ${productIds.length} products to ${value}`)
         const priceChangeParams = { productIds, target, value }
-        return superagent.post(`${config.web_api_url}${config.price_change_path}`).send(priceChangeParams).set('authorization', bearerToken)
+        return superagent.post(`${config.web_api_url}users/${values.user_id}/shops/${values.etsy_shop_id}/${config.price_change_path}`).send(priceChangeParams).set('authorization', bearerToken)
     }
 
     const hasPublishingError = (product) => {

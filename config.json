@@ -1,5 +1,5 @@
 {
-"web_api_url": "https://printify.com/api/v1/users/7059331/shops/2728905/",
+"web_api_url": "https://printify.com/api/v1",
 "price_change_path" : "products/change-price",
 "republish_path": "products/publish"
 }
