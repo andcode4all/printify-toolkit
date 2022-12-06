@@ -36,7 +36,7 @@ const config = require('../config')
     const fetchPageOfPublishedProducts = async (pageSize = 12, pageNumber) => {
         console.log(`fetching page number ${pageNumber} of ${pageSize} products`)
         let response = await superagent.get(`${getProductsURL}?page=${pageNumber}&limit=${pageSize}&sort=-updated_at&filters%5Bstatus%5D=published`).set('authorization', bearerToken)
-        // console.log(`there is ${response._body.last_page} pages of ${pageSize}`)
+        console.log(`there is ${response._body.last_page} pages of ${pageSize}`)
         return response._body
     }
 
@@ -91,6 +91,7 @@ const config = require('../config')
     }
 
     const republishProductsBulk = async (productsIds) => {
+        console.log(`Republishing ${productsIds.length} products...`)
         let republishParams = {products: productsIds}
         return superagent.post(bulkRepublishProductsURL).send(republishParams).set('authorization', bearerToken)
     }
@@ -98,7 +99,9 @@ const config = require('../config')
     const changePrice = async (productIds, target, value) => {
         console.log(`changing target ${target} of ${productIds.length} products to ${value}`)
         const priceChangeParams = { productIds, target, value }
-        return superagent.post(`${config.web_api_url}users/${values.user_id}/shops/${values.etsy_shop_id}/${config.price_change_path}`).send(priceChangeParams).set('authorization', bearerToken)
+        let response = await superagent.post(`${config.web_api_url}/users/${values.user_id}/shops/${values.etsy_shop_id}/${config.price_change_path}`).send(priceChangeParams).set('authorization', bearerToken)
+        console.log(`successfully changed price of ${response._body.success.length} products`)
+        return response
     }
 
     const hasPublishingError = (product) => {
