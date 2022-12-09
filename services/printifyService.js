@@ -34,9 +34,9 @@ const config = require('../config')
     }
 
     const fetchPageOfPublishedProducts = async (pageSize = 12, pageNumber) => {
-        console.log(`fetching page number ${pageNumber} of ${pageSize} products`)
+        console.log(`fetching page number ${pageNumber} of ${pageSize} products...`)
         let response = await superagent.get(`${getProductsURL}?page=${pageNumber}&limit=${pageSize}&sort=-updated_at&filters%5Bstatus%5D=published`).set('authorization', bearerToken)
-        console.log(`there is ${response._body.last_page} pages of ${pageSize}`)
+        // console.log(`there is ${response._body.last_page} pages of ${pageSize}`)
         return response._body
     }
 
@@ -62,7 +62,7 @@ const config = require('../config')
     }
 
     const isPublished = (product) => {
-        return ( product.publishing_status === 'succeeded' && product.is_visible )
+        return ( ['succeeded', 'failed'].includes(product.publishing_status) && product.is_visible )
     }
 
     const publishDetailsAreCorrect = (product) => {
@@ -108,6 +108,14 @@ const config = require('../config')
         return product.log && product.log.publisher && product.log.publisher.error_count > 0
     }
 
+
+    const sleep = async (ms) => {
+        console.log(`waiting ${ms/1000} seconds...`)
+        await new Promise(resolve => setTimeout(resolve, ms));
+        console.log('...continuing')
+        return
+    }
+
     module.exports = {
         getProducts,
         republishProductsBulk,
@@ -117,5 +125,6 @@ const config = require('../config')
         getProductsFromIds,
         fetchPageOfPublishedProducts,
         fetchAllPublishedProducts,
-        hasPublishingError
+        hasPublishingError,
+        sleep
     }
