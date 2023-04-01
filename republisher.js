@@ -3,7 +3,7 @@
     try {
         let allProducts = await fetchAllPublishedProducts()
         const productIds = allProducts.map(product => product._id)
-        // const productIds = ['627f0337308ccd43ef0e2dc2']
+        // const productIds = ['62a1ffd65bda9616c15d6bc4']
         const fullProducts = await getProductsFromIds(productIds)
         let productsForPublishing = {
             ready: [],

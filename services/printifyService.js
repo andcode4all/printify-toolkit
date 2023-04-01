@@ -1,7 +1,8 @@
 const values = require('../values.json')
 const getProductsURL = `https://printify.com/api/v1/users/${values.user_id}/shops/${values.etsy_shop_id}/products`
 const getOneProductURL = `https://printify.com/api/v1/users/${values.user_id}/shops/${values.etsy_shop_id}/products/`
-const bulkRepublishProductsURL = `https://printify.com/api/v1/users/${values.user_id}/shops/${values.etsy_shop_id}/products/publish`
+// const bulkRepublishProductsURL = `https://printify.com/api/v1/users/${values.user_id}/shops/${values.etsy_shop_id}/products/publish`
+const bulkRepublishProductsURL = `https://printify.com/api/v1/users/${values.user_id}/shops/${values.etsy_shop_id}/products/publish-with-details`
 const bearerToken = process.argv[2] === 'Bearer' ? `${process.argv[2]} ${process.argv[3]}` : `Bearer ${process.argv[2]}`
 const superagent = require('superagent');
 const config = require('../config')
@@ -90,13 +91,31 @@ const config = require('../config')
         return products
     }
 
-    const republishProductsBulk = async (productsIds) => {
-        console.log(`Republishing ${productsIds.length} products...`)
-        let republishParams = {products: productsIds}
+    const republishProductsBulk = async (productIds) => {
+        if(!productIds.length) {
+            console.log('no products to change')
+            return
+        }
+        console.log(`Republishing ${productIds.length} products...`)
+        let republishParams = {
+            products: productIds,
+            name: false,
+            description: false,
+            mockup: false,
+            inventory: true,
+            tags: true,
+            keyFeatures: true,
+            shipping_template: false
+        }
+
         return superagent.post(bulkRepublishProductsURL).send(republishParams).set('authorization', bearerToken)
     }
 
     const changePrice = async (productIds, target, value) => {
+        if(!productIds.length) {
+            console.log('no products to change')
+            return
+        }
         console.log(`changing target ${target} of ${productIds.length} products to ${value}`)
         const priceChangeParams = { productIds, target, value }
         let response = await superagent.post(`${config.web_api_url}/users/${values.user_id}/shops/${values.etsy_shop_id}/${config.price_change_path}`).send(priceChangeParams).set('authorization', bearerToken)
@@ -126,5 +145,6 @@ const config = require('../config')
         fetchPageOfPublishedProducts,
         fetchAllPublishedProducts,
         hasPublishingError,
-        sleep
+        sleep,
+        isPublished
     }
